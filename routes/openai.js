@@ -1,0 +1,24 @@
+mport express from "express";
+import OpenAI from "openai";
+
+const router = express.Router();
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Test endpoint
+router.get("/test", async (req, res) => {
+  try {
+    const response = await client.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: "Hello AI" }],
+    });
+    res.json({ result: response.choices[0].message });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+export default router; 
