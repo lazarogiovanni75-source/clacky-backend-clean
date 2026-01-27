@@ -2,6 +2,11 @@ import express from "express";
 
 const app = express();
 app.use(express.json());
+import draftRoutes from "./routes/draft.js";
+import approvalRoutes from "./routes/approval.js";
+
+app.use("/draft", draftRoutes);
+app.use("/approval", approvalRoutes);
 app.get("/", (req, res) => {
   res.send("Clacky backend is alive");
 });
