@@ -2,6 +2,8 @@ import express from "express";
 
 const app = express();
 app.use(express.json());
+/video/start
+/video/status/:jobId
 import draftRoutes from "./routes/draft.js";
 import approvalRoutes from "./routes/approval.js";
 
