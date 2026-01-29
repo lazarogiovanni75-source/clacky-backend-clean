@@ -1,6 +1,6 @@
-import OpenAI from "openai";
+import openai from "openai";
 
-const client = new OpenAI({
+const client = new openai({
   apiKey: process.env.OPENAI_API_KEY
 });
 
