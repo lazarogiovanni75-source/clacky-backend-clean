@@ -1,45 +1,36 @@
-import express from "express";
-import fetch from "node-fetch";
-import dotenv from "dotenv";
-dotenv.config();
+import axios from "axios";
 
-const app = express();
-app.use(express.json());
+const DEFAPI_BASE = "https://api.defapi.ai";
+const DEFAPI_KEY = process.env.DEFAPI_KEY;
 
-app.post("/generate/video", async (req, res) => {
-  const { prompt } = req.body;
-
-  // 1. Start video job
-  const genResponse = await fetch("https://api.defapi.org/api/sora2/gen", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${process.env.DEFAPI_KEY}`,
-      "Content-Type": "application/json",
+export async function startVideo(prompt) {
+  const response = await axios.post(
+    `${DEFAPI_BASE}/api/sora2/gen`,
+    {
+      prompt,
+      hd: true
     },
-    body: JSON.stringify({ prompt })
-  });
-
-  const genData = await genResponse.json();
-  const taskId = genData.task_id;
-
-  // 2. Poll for completion
-  let videoData;
-  for (let i = 0; i < 20; i++) {
-    await new Promise(r => setTimeout(r, 3000)); // wait 3 seconds
-    const statusResponse = await fetch(`https://api.defapi.org/api/task/query?task_id=${taskId}`, {
-      headers: { "Authorization": `Bearer ${process.env.DEFAPI_KEY}` }
-    });
-    const statusData = await statusResponse.json();
-    if (statusData.status === "success") {
-      videoData = statusData;
-      break;
+    {
+      headers: {
+        Authorization: `Bearer ${DEFAPI_KEY}`,
+        "Content-Type": "application/json"
+      }
     }
-  }
+  );
 
-  if (!videoData) return res.status(500).json({ error: "Video generation failed or timed out." });
+  return response.data; // should include task_id / jobId
+}
 
-  // 3. Return video URL to frontend
-  res.json({ video_url: videoData.video_url });
-});
+export async function getVideoStatus(jobId) {
+  const response = await axios.get(
+    `${DEFAPI_BASE}/api/task/query`,
+    {
+      params: { task_id: jobId },
+      headers: {
+        Authorization: `Bearer ${DEFAPI_KEY}`
+      }
+    }
+  );
 
-export default app;
+  return response.data;
+}
