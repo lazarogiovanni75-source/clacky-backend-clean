@@ -24,6 +24,13 @@ app.post('/chat', (req, res) => {
     reply: `Server received your message: "${message}"`
   });
 });
+app.post("/video/start", async (req, res) => {
+  const { prompt } = req.body;
+
+  const result = await startVideo(prompt);
+
+  res.json(result);
+});
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
