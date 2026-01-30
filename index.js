@@ -1,5 +1,6 @@
 import express from "express";
 import axios from "axios";
+import { startVideo } from "./services/videoGenerator.js";
 
 const app = express();
 app.use(express.json());
